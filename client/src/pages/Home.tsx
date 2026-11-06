@@ -3,19 +3,15 @@ import {
   ArrowRight,
   BookOpen,
   Check,
-  CircleHelp,
-  Download,
   Heart,
   Lightbulb,
-  Paintbrush,
   Pencil,
-  Printer,
-  RotateCcw,
   Sparkles,
   Star,
   UserRound,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import StoryReader, { type StoryReaderData } from "@/components/StoryReader";
 
 type FormData = {
   name: string;
@@ -28,19 +24,7 @@ type FormData = {
   theme: string;
 };
 
-type Story = {
-  titulo: string;
-  edad_objetivo: number;
-  cuento: string[];
-  ejercicios_comprension: Array<{
-    tipo: string;
-    pregunta?: string;
-    opciones?: string[];
-    respuesta_correcta?: string;
-    pauta_guiada?: string;
-    consigna?: string;
-  }>;
-};
+type Story = StoryReaderData;
 
 const initialForm: FormData = {
   name: "Lola",
@@ -59,16 +43,6 @@ const steps = [
   { label: "La aventura", note: "Dónde ocurre y qué descubrirá" },
 ];
 
-const chapterInfo = [
-  { title: "La brújula escondida", subtitle: "Donde todo comienza" },
-  { title: "La primera pista", subtitle: "Una señal entre las hojas" },
-  { title: "El puente de los susurros", subtitle: "Escuchar para avanzar" },
-  { title: "La montaña de niebla", subtitle: "Un reto enorme" },
-  { title: "El jardín de los intentos", subtitle: "Probar, parar y volver" },
-  { title: "El mapa que cambia", subtitle: "Una decisión valiente" },
-  { title: "La colina de estrellas", subtitle: "La luz más esperada" },
-  { title: "Una luz para volver", subtitle: "Lo aprendido se queda" },
-] as const;
 
 const themes = ["la confianza en uno mismo", "la empatía", "la paciencia", "la amistad", "gestionar el enojo"];
 const settings = ["un bosque que brilla al anochecer", "una isla flotante", "una biblioteca secreta", "un pueblo junto al mar"];
@@ -82,9 +56,6 @@ function themePrompt(theme: string) {
   return "confiar un poquito más en sus propias ideas";
 }
 
-function chapterNumber(index: number) {
-  return String(index + 1).padStart(2, "0");
-}
 
 function makeStory(data: FormData): Story {
   const name = data.name.trim() || "tu peque";
@@ -160,18 +131,13 @@ export default function Home() {
   const [form, setForm] = useState<FormData>(initialForm);
   const [step, setStep] = useState(0);
   const [story, setStory] = useState<Story | null>(null);
-  const [readingChapter, setReadingChapter] = useState(0);
   const [isCreating, setIsCreating] = useState(false);
-  const [answers, setAnswers] = useState<Record<number, string>>({});
   const update = (key: keyof FormData, value: string) => setForm((current) => ({ ...current, [key]: value }));
-  const chapters = useMemo(() => story?.cuento ?? [], [story]);
 
   const createStory = () => {
     setIsCreating(true);
     window.setTimeout(() => {
       setStory(makeStory(form));
-      setReadingChapter(0);
-      setAnswers({});
       setIsCreating(false);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }, 700);
@@ -180,7 +146,6 @@ export default function Home() {
   const reset = () => {
     setStory(null);
     setStep(0);
-    setReadingChapter(0);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -204,72 +169,7 @@ export default function Home() {
   };
 
   if (story) {
-    const currentChapter = chapterInfo[readingChapter];
-    const readingProgress = ((readingChapter + 1) / chapters.length) * 100;
-    return (
-      <div className="app-shell reader-shell reader-container">
-        <Header onReset={reset} compact />
-        <main className="reader-layout">
-          <aside className="reader-aside">
-            <div className="eyebrow">Tu cuento está listo</div>
-            <div className="reader-title-block">
-              <span className="story-sticker"><Star size={13} fill="currentColor" /> hecho para {form.name}</span>
-              <h1>{story.titulo}</h1>
-              <p>Una aventura sobre {form.theme || "crecer por dentro"}.</p>
-            </div>
-            <div className="chapter-nav" aria-label="Capítulos">
-              {chapters.map((_, index) => (
-                <button key={index} className={readingChapter === index ? "active" : ""} aria-current={readingChapter === index ? "page" : undefined} onClick={() => setReadingChapter(index)}>
-                  <span className="chapter-number">{chapterNumber(index)}</span>
-                  <span>
-                    <strong>{chapterInfo[index].title}</strong>
-                    <small>{chapterInfo[index].subtitle}</small>
-                  </span>
-                  {readingChapter > index && <Check size={15} className="chapter-check" />}
-                </button>
-              ))}
-            </div>
-            <div className="reader-actions">
-              <button className="subtle-button" onClick={editStory}><Pencil size={15} /> Editar detalles</button>
-              <button className="subtle-button" onClick={printStory}><Printer size={15} /> Imprimir cuento</button>
-              <button className="subtle-button" onClick={downloadJson}><Download size={15} /> Guardar JSON</button>
-            </div>
-          </aside>
-          <section className="reading-column">
-            <div className="reading-topline"><span>Capítulo {chapterNumber(readingChapter)} de {chapterNumber(chapters.length - 1)}</span><span>{Math.round(readingProgress)}% leído</span></div>
-            <div className="reading-progress" aria-label={`${Math.round(readingProgress)}% del cuento leído`}><span style={{ width: `${readingProgress}%` }} /></div>
-            <article className="story-page">
-              <div className="chapter-kicker"><BookOpen size={16} /> Capítulo {chapterNumber(readingChapter)}</div>
-              <h2>{currentChapter.title}</h2>
-              <div className="chapter-ornament"><span /><Sparkles size={15} /><span /></div>
-              {chapters[readingChapter].split("\n\n").map((paragraph, index) => <p key={index}>{paragraph}</p>)}
-              <div className="chapter-controls">
-                <button className="outline-button" onClick={() => setReadingChapter((current) => Math.max(0, current - 1))} disabled={readingChapter === 0}><ArrowLeft size={16} /> Anterior</button>
-                {readingChapter < chapters.length - 1 ? <button className="primary-button" onClick={() => setReadingChapter((current) => Math.min(chapters.length - 1, current + 1))}>Siguiente capítulo <ArrowRight size={16} /></button> : <button className="primary-button" onClick={() => document.getElementById("activities")?.scrollIntoView({ behavior: "smooth" })}>Ir a las actividades <ArrowRight size={16} /></button>}
-              </div>
-            </article>
-            <section className="activities-section" id="activities">
-              <div className="section-heading">
-                <div><div className="eyebrow">Para conversar juntos</div><h2>Pequeñas preguntas, grandes descubrimientos</h2></div>
-                <span className="activity-badge"><Lightbulb size={15} /> 5 actividades</span>
-              </div>
-              <div className="activity-grid">
-                {story.ejercicios_comprension.map((exercise, index) => (
-                  <div className={`activity-card activity-${exercise.tipo.startsWith("Literal") ? "literal" : exercise.tipo.startsWith("Inferencial") ? "emotion" : "creative"}`} key={index}>
-                    <div className="activity-card-top"><span className="activity-type">{exercise.tipo}</span><span className="activity-index">{chapterNumber(index)}</span></div>
-                    {exercise.pregunta && <h3>{exercise.pregunta}</h3>}
-                    {exercise.opciones && <div className="answer-options">{exercise.opciones.map((option) => <button key={option} onClick={() => setAnswers((current) => ({ ...current, [index]: option }))} className={answers[index] === option ? (option === exercise.respuesta_correcta ? "correct" : "selected") : ""}>{option}{answers[index] === option && option === exercise.respuesta_correcta && <Check size={14} />}</button>)}</div>}
-                    {exercise.pauta_guiada && <div className="guide-note"><CircleHelp size={16} /><span>{exercise.pauta_guiada}</span></div>}
-                    {exercise.consigna && <div className="creative-note"><Paintbrush size={18} /><span>{exercise.consigna}</span></div>}
-                  </div>
-                ))}
-              </div>
-            </section>
-            <div className="reader-footer"><span><Heart size={14} fill="currentColor" /> Creado con cariño en CuentaCrece</span><button onClick={reset}><RotateCcw size={14} /> Crear otro cuento</button></div>
-          </section>
-        </main>
-      </div>
-    );
+    return <StoryReader storyData={story} formName={form.name} theme={form.theme} onEdit={editStory} onReset={reset} onPrint={printStory} onDownload={downloadJson} />;
   }
 
   return (
