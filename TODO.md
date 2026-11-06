@@ -7,7 +7,7 @@
 
 ## Generación y estructura narrativa
 - [x] La acción principal genera un cuento completamente personalizado en el que el niño es el protagonista activo.
-- [x] El cuento contiene tres capítulos diferenciados: inicio, desafío/desarrollo y resolución satisfactoria.
+- [x] El cuento contiene ocho capítulos diferenciados, con inicio, pistas, desafíos, resolución y cierre emocional satisfactorio.
 - [x] El texto usa frases cortas, diálogos, onomatopeyas y vocabulario amigable para la edad seleccionada.
 - [x] La salida interna mantiene título, edad objetivo, capítulos y ejercicios en una estructura JSON equivalente a la especificada.
 
@@ -19,4 +19,4 @@
 
 ## Cierre y continuidad
 - [x] El usuario puede volver a editar la historia, imprimirla y comenzar otra historia.
-- [x] La experiencia es responsive y mantiene controles legibles en móvil y escritorio.
+- [x] La experiencia aplica `EstiloYDiseñoVisual.css` y mantiene controles legibles, áreas táctiles cómodas y lectura fluida en móvil y escritorio.

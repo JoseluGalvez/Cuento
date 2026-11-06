@@ -2,6 +2,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@import "./EstiloYDiseñoVisual.css";
+
 @custom-variant dark (&:is(.dark *));
 
 :root { --ink: #342b3c; --ink-soft: #695f6d; --paper: #fffaf3; --paper-deep: #f7efe5; --coral: #e47765; --coral-dark: #c75b51; --lavender: #eee9f7; --lilac: #a394c9; --yellow: #f9d875; --line: #e9ded4; --green: #7daa83; --radius: 18px; }
@@ -68,3 +70,136 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 @media (max-width: 900px) { .hero-section { grid-template-columns: 1fr; gap: 42px; padding-top: 52px; }.hero-copy { padding-left: 0; }.hero-copy h1 { font-size: clamp(50px, 13vw, 78px); }.hero-illustration { height: 360px; max-width: 650px; width: 100%; margin: 0 auto; }.builder-layout { grid-template-columns: 1fr; gap: 35px; }.stepper { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 0; }.stepper-line { top: 27px; bottom: auto; left: 15%; width: 70%; height: 1px; }.stepper-line span { height: 1px !important; width: 50%; }.step-item { flex-direction: column; align-items: flex-start; gap: 8px; padding: 0; }.step-item small { max-width: 160px; }.tip-card { display: none; }.reader-layout { grid-template-columns: 1fr; padding-top: 42px; }.reader-aside { position: static; }.reader-title-block { padding: 20px 0 22px; }.chapter-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }.chapter-nav button { align-items: flex-start; padding: 11px; }.chapter-nav small { display: none; }.reader-actions { flex-direction: row; margin-top: 10px; }.reader-actions .subtle-button { padding-left: 0; padding-right: 15px; }.reading-column { margin-top: 12px; } }
 @media (max-width: 620px) { .site-header { padding: 0 20px; height: 67px; }.header-note { display: none; }.hero-section { padding: 45px 20px 75px; }.hero-copy h1 { font-size: 53px; }.hero-copy > p { font-size: 14px; }.hero-illustration { height: 285px; }.sun-glow { width: 170px; height: 170px; top: 28px; right: 45px; }.moon-shape { width: 52px; height: 52px; top: 49px; left: 43px; }.story-character { bottom: 45px; transform: translateX(-50%) scale(.72); }.illustration-caption { bottom: 16px; font-size: 9px; }.builder-section { padding: 68px 20px 70px; }.builder-intro { display: block; margin-bottom: 34px; }.builder-intro h2 { font-size: 38px; }.builder-intro p { margin-top: 17px; }.stepper { gap: 3px; }.step-item { gap: 5px; }.step-item strong { font-size: 11px; }.step-item small { font-size: 9px; line-height: 1.25; }.step-icon { width: 32px; height: 32px; flex-basis: 32px; }.stepper-line { top: 16px; }.form-panel { padding: 25px 19px 22px; }.form-heading { gap: 11px; padding-bottom: 22px; }.form-icon { width: 38px; height: 38px; }.form-heading h3 { font-size: 15px; }.form-heading p { line-height: 1.45; }.form-grid { grid-template-columns: 1fr; gap: 17px; padding-top: 24px; }.field-full { grid-column: auto; }.form-actions { margin-top: 12px; }.primary-button, .outline-button { font-size: 11px; padding: 11px 12px; }.site-footer { padding: 23px 20px; display: block; line-height: 1.8; }.site-footer span:last-child { display: block; }.reader-layout { padding: 32px 20px 60px; }.reader-title-block h1 { font-size: 42px; }.chapter-nav button { gap: 7px; }.chapter-number { font-size: 16px; width: 20px; }.chapter-nav strong { font-size: 10px; }.reader-actions { flex-wrap: wrap; }.story-page { padding: 37px 27px 31px; box-shadow: 7px 8px 0 #eee2d8; }.story-page p { font-size: 14px; line-height: 1.75; }.story-page::before { left: 10px; }.chapter-controls { gap: 8px; }.activities-section { padding-top: 70px; }.section-heading { display: block; }.activity-badge { margin-top: 15px; }.activity-grid { grid-template-columns: 1fr; }.activity-card:nth-child(3) { grid-column: auto; }.reader-footer { display: block; line-height: 2; }.reader-footer button { padding: 0; display: flex; } }
 @media print { .site-header, .reader-aside, .reading-topline, .reading-progress, .chapter-controls, .activity-badge, .reader-footer { display: none !important; }.reader-layout { display: block; padding: 0; }.story-page { box-shadow: none; }.activities-section { padding-top: 50px; }.activity-grid { grid-template-columns: 1fr 1fr; }.app-shell { background: white; } }
+
+
+/* Integración del estilo adjunto: lectura cálida, controles cómodos y navegación táctil. */
+.reader-shell.reader-container {
+  min-height: 100vh;
+  height: auto;
+  display: block;
+  background: #faf8f5;
+  color: var(--ink);
+  font-family: "DM Sans", system-ui, sans-serif;
+}
+
+.reader-shell .reader-toolbar {
+  min-height: 78px;
+  height: auto;
+  padding-block: 14px;
+}
+
+.reader-shell .reader-layout {
+  height: auto;
+  min-height: calc(100vh - 78px);
+}
+
+.brand,
+.reader-actions button,
+.chapter-nav button,
+.form-actions button,
+.answer-options button,
+.quick-picks button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 900px) {
+  .chapter-nav {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .chapter-nav button {
+    min-height: 54px;
+  }
+}
+
+@media (max-width: 620px) {
+  body {
+    min-width: 320px;
+  }
+
+  .brand {
+    min-height: 44px;
+  }
+
+  .step-item {
+    min-height: 60px;
+    padding: 6px 0;
+  }
+
+  .quick-picks button {
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+
+  .form-actions {
+    gap: 10px;
+  }
+
+  .form-actions > .primary-button,
+  .form-actions > .outline-button {
+    min-height: 44px;
+  }
+
+  .form-actions > .primary-button {
+    flex: 1;
+  }
+
+  .chapter-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .chapter-nav button {
+    min-height: 58px;
+    padding: 10px 9px;
+    gap: 8px;
+  }
+
+  .chapter-nav strong {
+    font-size: 11px;
+    line-height: 1.15;
+  }
+
+  .chapter-nav small {
+    display: block;
+    font-size: 9px;
+    line-height: 1.2;
+  }
+
+  .subtle-button {
+    min-height: 44px;
+    padding: 10px 8px;
+  }
+
+  .reading-topline {
+    font-size: 9px;
+  }
+
+  .story-page {
+    overflow-wrap: anywhere;
+  }
+
+  .chapter-controls {
+    align-items: stretch;
+  }
+
+  .chapter-controls button {
+    min-height: 44px;
+    flex: 1;
+    padding-inline: 10px;
+  }
+
+  .chapter-controls .primary-button {
+    font-size: 10px;
+  }
+
+  .answer-options button {
+    min-height: 44px;
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .reader-footer button {
+    min-height: 44px;
+  }
+}

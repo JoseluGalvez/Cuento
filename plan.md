@@ -1,7 +1,7 @@
 # Plan de CuentaCrece
 
 ## Alcance
-CuentaCrece será una aplicación web familiar que guía a madres, padres y cuidadores desde la personalización del protagonista hasta la lectura de un cuento infantil de tres capítulos y sus actividades pedagógicas. La primera versión será autosuficiente en el navegador: el botón de generación producirá un cuento personalizado con una plantilla narrativa coherente y una salida estructurada equivalente al JSON solicitado, sin exigir credenciales externas. El backend queda preparado para integrar más adelante un motor narrativo LLM.
+CuentaCrece será una aplicación web familiar que guía a madres, padres y cuidadores desde la personalización del protagonista hasta la lectura de un cuento infantil de ocho capítulos y sus actividades pedagógicas. La primera versión será autosuficiente en el navegador: el botón de generación producirá un cuento personalizado con una plantilla narrativa coherente y una salida estructurada equivalente al JSON solicitado, sin exigir credenciales externas. El backend queda preparado para integrar más adelante un motor narrativo LLM.
 
 ## Implementación
 - React + TypeScript + Tailwind sobre el starter `web-db-user` ya inicializado.
