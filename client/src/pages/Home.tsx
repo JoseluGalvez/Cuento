@@ -11,11 +11,13 @@ import {
   UserRound,
 } from "lucide-react";
 import { useState } from "react";
+import AvatarBuilder, { type AvatarData } from "@/components/AvatarBuilder";
 import StoryReader, { type StoryReaderData } from "@/components/StoryReader";
 
 type FormData = {
   name: string;
   age: string;
+  avatar: AvatarData;
   appearance: string;
   interests: string;
   companions: string;
@@ -29,6 +31,18 @@ type Story = StoryReaderData;
 const initialForm: FormData = {
   name: "Lola",
   age: "6",
+  avatar: {
+    skinTone: "medio",
+    hair: "rizado",
+    hairColor: "castaño",
+    eyes: "marrones",
+    glasses: false,
+    freckles: false,
+    hearingAid: false,
+    mobilityAid: "",
+    clothing: "coral",
+    accessory: "",
+  },
   appearance: "pelo rizado y una sonrisa enorme",
   interests: "las estrellas y los animales del bosque",
   companions: "Nube, una perrita pequeña",
@@ -67,12 +81,20 @@ function makeStory(data: FormData): Story {
   const hobby = data.hobbies.trim() || "inventar nuevas ideas";
   const appearance = data.appearance.trim() || "una mirada llena de curiosidad";
   const lesson = themePrompt(theme);
+  const avatarDetails = [
+    data.avatar.hair && data.avatar.hair !== "sin especificar" && `pelo ${data.avatar.hair}`,
+    data.avatar.hairColor && `de color ${data.avatar.hairColor}`,
+    data.avatar.glasses && "unas gafas especiales",
+    data.avatar.freckles && "unas pecas pequeñitas",
+    data.avatar.hearingAid && "un audífono que le ayuda a escuchar el mundo",
+  ].filter(Boolean).join(" y ");
+  const appearanceForStory = appearance || avatarDetails || "una mirada llena de curiosidad";
 
   return {
     titulo: `${name} y la brújula de las estrellas`,
     edad_objetivo: age,
     cuento: [
-      `En ${setting}, justo cuando el cielo se pintó de violeta, vivía ${name}. Tenía ${appearance} y una manera muy especial de mirar las cosas. Le encantaba ${interest} y pasaba las tardes ${hobby}.\n\nAquella noche, ${name} encontró una brújula diminuta bajo una hoja dorada. No señalaba el norte. ¡Señalaba una estrella!\n\n—¿Adónde nos llevará? —preguntó ${name}.\n—¡Guau, guau! —ladró ${companion}, dando un saltito.\n\nLa brújula brilló: ¡clin, clin, clin! Y una lucecita cayó suavemente frente a sus pies.`,
+      `En ${setting}, justo cuando el cielo se pintó de violeta, vivía ${name}. Tenía ${appearanceForStory} y una manera muy especial de mirar las cosas. Le encantaba ${interest} y pasaba las tardes ${hobby}.\n\nAquella noche, ${name} encontró una brújula diminuta bajo una hoja dorada. No señalaba el norte. ¡Señalaba una estrella!\n\n—¿Adónde nos llevará? —preguntó ${name}.\n—¡Guau, guau! —ladró ${companion}, dando un saltito.\n\nLa brújula brilló: ¡clin, clin, clin! Y una lucecita cayó suavemente frente a sus pies.`,
       `La lucecita temblaba como una luciérnaga. Quería volver al cielo, pero solo podía hacerlo si encontraba el camino de las ocho señales. La primera apareció sobre una piedra: tres puntitos dorados formando una flecha.\n\n${name} guardó la brújula en el bolsillo y siguió a ${companion} entre helechos altos. Cada vez que daban un paso, la aguja decía “clin”. Cada vez que se detenían a mirar, la estrella se iluminaba un poco más.\n\nAl final del sendero encontraron una puerta hecha de ramas. No tenía cerradura, solo una pregunta: “¿Qué sabes hacer cuando algo te da curiosidad?”. ${name} sonrió y respondió: “Observar, probar y preguntar”. La puerta se abrió con un suave ¡crac!`,
       `Detrás de la puerta había un puente de madera sobre un arroyo oscuro. El agua cantaba bajito, pero los tablones susurraban cosas diferentes. Unos decían “corre”; otros, “vuelve”; otros, “espera”.\n\n${name} quiso cruzar deprisa, aunque el puente se movía un poquito. Entonces ${companion} apoyó una patita en el primer tablón. ${name} escuchó con atención y descubrió que el puente seguro sonaba “plin”.\n\nPaso a paso, los dos siguieron el sonido. Al llegar al otro lado, una segunda señal apareció en el aire: una estrella con forma de oreja. La brújula les enseñaba que escuchar también podía ser una manera de encontrar el camino.`,
       `El sendero subía hacia una montaña de niebla. Desde abajo parecía enorme, como un gigante dormido. El corazón de ${name} comenzó a ir rápido, rápido. El verdadero desafío era ${lesson}.\n\n—No sé si podré —susurró.\n\nLa niebla se acercó hasta tapar casi todo. ${companion} se quedó junto a su lado. ${name} respiró despacio. Una vez. Y otra vez. Después, dibujó en el suelo un mapa con tres flechas: “mirar”, “probar” y “volver a intentar”.\n\nLa primera flecha encontró una roca. La segunda encontró un camino. La tercera ayudó a ${name} a levantarse cuando resbaló. La montaña no se hizo más pequeña, pero ${name} sí se sintió un poco más grande por dentro.`,
@@ -132,7 +154,7 @@ export default function Home() {
   const [step, setStep] = useState(0);
   const [story, setStory] = useState<Story | null>(null);
   const [isCreating, setIsCreating] = useState(false);
-  const update = (key: keyof FormData, value: string) => setForm((current) => ({ ...current, [key]: value }));
+  const update = <K extends keyof FormData>(key: K, value: FormData[K]) => setForm((current) => ({ ...current, [key]: value }));
 
   const createStory = () => {
     setIsCreating(true);
@@ -199,7 +221,7 @@ export default function Home() {
               <div className="tip-card"><Lightbulb size={17} /><p><strong>Tip de CuentaCrece</strong><br />No hay respuestas correctas. Los detalles pequeños hacen las historias enormes.</p></div>
             </aside>
             <div className="form-panel">
-              {step === 0 && <div className="step-content"><div className="form-heading"><span className="form-icon coral"><UserRound size={21} /></span><div><h3>Empecemos por quien hace especial el cuento</h3><p>El protagonista siempre será el héroe o la heroína de esta historia.</p></div></div><div className="form-grid"><Field label="¿Cómo se llama?" hint="Su nombre aparecerá en el cuento" value={form.name} onChange={(value) => update("name", value)} placeholder="Ej. Martina" /><Field label="¿Cuántos años tiene?" value={form.age} onChange={(value) => update("age", value)} placeholder="6" type="number" /><Field label="¿Cómo es físicamente?" hint="Un detalle que le haga reconocible" value={form.appearance} onChange={(value) => update("appearance", value)} placeholder="Ej. pecas y pelo rizado" /><Field label="¿Qué le gusta?" hint="Sus intereses llenarán la aventura de pistas" value={form.interests} onChange={(value) => update("interests", value)} placeholder="Ej. los dinosaurios y la luna" /></div></div>}
+              {step === 0 && <div className="step-content"><div className="form-heading"><span className="form-icon coral"><UserRound size={21} /></span><div><h3>Empecemos por quien hace especial el cuento</h3><p>El protagonista siempre será el héroe o la heroína de esta historia.</p></div></div><div className="form-grid"><Field label="¿Cómo se llama?" hint="Su nombre aparecerá en el cuento" value={form.name} onChange={(value) => update("name", value)} placeholder="Ej. Martina" /><Field label="¿Cuántos años tiene?" value={form.age} onChange={(value) => update("age", value)} placeholder="6" type="number" /><Field label="¿Qué detalle le hace especial?" hint="Puedes escribirlo o dejar que hable el avatar" value={form.appearance} onChange={(value) => update("appearance", value)} placeholder="Ej. una sonrisa enorme" /><Field label="¿Qué le gusta?" hint="Sus intereses llenarán la aventura de pistas" value={form.interests} onChange={(value) => update("interests", value)} placeholder="Ej. los dinosaurios y la luna" /></div><AvatarBuilder value={form.avatar} onChange={(avatar) => update("avatar", avatar)} /></div>}
               {step === 1 && <div className="step-content"><div className="form-heading"><span className="form-icon lavender"><Heart size={21} /></span><div><h3>Ahora, abramos la puerta a su mundo</h3><p>Sus compañeros y aficiones pueden ser la clave para resolver el desafío.</p></div></div><div className="form-grid"><Field label="¿Quién le acompañará?" hint="Nombre y tipo de mascota o compañero" value={form.companions} onChange={(value) => update("companions", value)} placeholder="Ej. Coco, un gato curioso" /><Field label="¿Qué le encanta hacer?" hint="Una afición o talento especial" value={form.hobbies} onChange={(value) => update("hobbies", value)} placeholder="Ej. construir cosas" /></div><div className="quick-picks"><span>Ideas rápidas</span>{["una mascota valiente", "su mejor amigo", "un abuelo aventurero"].map((idea) => <button key={idea} onClick={() => update("companions", idea)}>{idea}</button>)}</div></div>}
               {step === 2 && <div className="step-content"><div className="form-heading"><span className="form-icon yellow"><Sparkles size={21} /></span><div><h3>Elige el lugar y lo que aprenderá</h3><p>Un buen cuento deja una pregunta encendida mucho después del final.</p></div></div><div className="form-grid"><Field label="¿Dónde sucede la aventura?" hint="Escribe un lugar o elige una idea" value={form.setting} onChange={(value) => update("setting", value)} placeholder="Ej. un faro en una isla flotante" /><Field label="¿Qué tema quieres acompañar?" hint="Se convertirá en decisiones dentro del cuento" value={form.theme} onChange={(value) => update("theme", value)} placeholder="Ej. aprender a tener paciencia" /></div><div className="quick-picks"><span>Ideas rápidas</span>{settings.slice(0, 3).map((option) => <button key={option} onClick={() => update("setting", option)}>{option}</button>)}{themes.slice(0, 3).map((option) => <button key={option} onClick={() => update("theme", option)}>{option}</button>)}</div><div className="custom-note"><Pencil size={15} /><span>Cuanto más tuyo sea el detalle, más tuya se sentirá la aventura.</span></div></div>}
               <div className="form-actions">{step > 0 ? <button className="outline-button" onClick={() => setStep((current) => current - 1)}><ArrowLeft size={16} /> Atrás</button> : <span />}{step < 2 ? <button className="primary-button" onClick={() => setStep((current) => current + 1)}>Siguiente paso <ArrowRight size={16} /></button> : <button className="primary-button create-button" onClick={createStory} disabled={isCreating}>{isCreating ? <><span className="button-loader" /> Escribiendo tu aventura...</> : <><Sparkles size={17} /> Escribir mi cuento</>}</button>}</div>
